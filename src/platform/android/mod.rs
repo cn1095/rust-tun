@@ -22,7 +22,16 @@ use crate::error::*;
 
 /// Android-only interface configuration.
 #[derive(Copy, Clone, Default, Debug)]
-pub struct Configuration {}
+pub struct Configuration {
+    pub(crate) no_close_fd_on_drop: bool,
+}
+
+impl Configuration {
+    pub fn no_close_fd_on_drop(&mut self, value: bool) -> &mut Self {
+        self.no_close_fd_on_drop = value;
+        self
+    }
+}
 
 /// Create a TUN device with the given name.
 pub fn create(configuration: &C) -> Result<Device> {

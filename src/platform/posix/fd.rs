@@ -19,7 +19,7 @@ use crate::error::*;
 use libc::{self, fcntl, F_GETFL, F_SETFL, O_NONBLOCK};
 
 /// POSIX file descriptor support for `io` traits.
-pub struct Fd(pub RawFd);
+pub struct Fd(pub RawFd, bool);
 
 impl Fd {
     pub fn new(value: RawFd) -> Result<Self> {
@@ -27,7 +27,11 @@ impl Fd {
             return Err(Error::InvalidDescriptor);
         }
 
-        Ok(Fd(value))
+        Ok(Fd(value, false))
+    }
+
+    pub fn set_no_close(&mut self, no_close: bool) {
+        self.1 = no_close;
     }
 
     /// Enable non-blocking mode
@@ -116,7 +120,7 @@ impl IntoRawFd for Fd {
 impl Drop for Fd {
     fn drop(&mut self) {
         unsafe {
-            if self.0 >= 0 {
+            if self.0 >= 0 && !self.1 {
                 libc::close(self.0);
             }
         }

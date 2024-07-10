@@ -24,7 +24,7 @@ enum PacketProtocol {
     #[default]
     IPv4,
     IPv6,
-    Other(u8),
+    Other(#[allow(dead_code)] u8),
 }
 
 // Note: the protocol in the packet information header is platform dependent.

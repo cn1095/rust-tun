@@ -36,7 +36,8 @@ impl Device {
             _ => return Err(Error::InvalidConfig),
         };
         let device = {
-            let tun = Fd::new(fd).map_err(|_| io::Error::last_os_error())?;
+            let mut tun = Fd::new(fd).map_err(|_| io::Error::last_os_error())?;
+            tun.set_no_close(config.platform.no_close_fd_on_drop);
 
             Device {
                 queue: Queue { tun },
